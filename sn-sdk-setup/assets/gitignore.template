@@ -1,0 +1,18 @@
+# Node modules
+node_modules/
+
+# SDK build output
+dist/
+build/
+.now-sdk/
+
+# Generated Fluent DSL output
+src/fluent/generated/
+
+# Environment files
+.env
+*.env
+.env.local
+
+# Auth credentials are stored in ~/.snc/ (not in this directory)
+# No auth file pattern needed here — credentials are not project files

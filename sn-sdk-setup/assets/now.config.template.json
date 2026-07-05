@@ -1,0 +1,13 @@
+{
+  "_comment": "Template: replace all <placeholder> values. Remove _comment before use.",
+  "_comment_scope": "scope: must begin with x_, lowercase and underscores only, max 18 chars",
+  "_comment_scopeId": "scopeId: leave empty string before first now-sdk install; filled automatically after",
+  "_comment_name": "name: display name for the app (can contain spaces)",
+  "_comment_tsconfigPath": "tsconfigPath: required only when using TypeScript in src/server/; remove if not needed",
+  "_comment_dependencies": "dependencies: ServiceNow app dependencies (not npm packages); empty object is valid",
+  "scope": "x_<vendor>_<appname>",
+  "scopeId": "",
+  "name": "My Application Display Name",
+  "tsconfigPath": "./src/server/tsconfig.json",
+  "dependencies": {}
+}
