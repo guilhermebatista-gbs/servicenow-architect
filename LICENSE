@@ -2,6 +2,13 @@ MIT License
 
 Copyright (c) 2026 The servicenow-architect Authors
 
+Portions of this software — the sn-scripting, sn-sdk-fluent, and sn-sdk-setup
+sub-skills — are adapted from the servicenow-agent-skills project
+(https://github.com/aatrey882/servicenow-agent-skills) and remain under its
+original MIT License:
+
+    Copyright (c) 2026 The servicenow-agent-skills Authors
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights

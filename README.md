@@ -43,6 +43,10 @@ Or install the whole suite as a plugin/skill bundle per your tool's documentatio
 
 This suite is a **knowledge and best-practice guide**, not a substitute for your instance's dictionary or your organization's standards. Table and class names can vary by release and by customization — always verify in your instance. It does not make changes to any ServiceNow instance on its own; it helps you design, decide, and build.
 
+## Acknowledgments
+
+The developer sub-skills — `sn-scripting`, `sn-sdk-fluent`, and `sn-sdk-setup` — are built on the excellent [**servicenow-agent-skills**](https://github.com/aatrey882/servicenow-agent-skills) project by [@aatrey882](https://github.com/aatrey882), used and adapted under the MIT License. Sincere thanks to its authors for open-sourcing a high-quality ServiceNow SDK knowledge base — this suite would be poorer without it.
+
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT — see [LICENSE](./LICENSE). The `sn-scripting`, `sn-sdk-fluent`, and `sn-sdk-setup` sub-skills retain the copyright of the original [servicenow-agent-skills](https://github.com/aatrey882/servicenow-agent-skills) authors under the MIT License.
