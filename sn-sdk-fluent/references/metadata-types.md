@@ -6,6 +6,16 @@ All constructors import from `@servicenow/sdk/core`. Files use the `.now.ts` ext
 
 **Note:** `SPPage` does NOT require `$id` — it uses `pageId` as the URL identifier instead.
 
+## Table of contents
+
+Jump to the one section you need — do not read this file top to bottom.
+
+Platform basics: [Table](#table) · [Record](#record) · [Role](#role) · [Acl](#acl) · [BusinessRule](#businessrule) · [ClientScript](#clientscript) · [UiAction](#uiaction) · [ScriptInclude](#scriptinclude) · [RestApi](#restapi) · [UiPage](#uipage) · [UIPolicy](#uipolicy) · [ApplicationMenu](#applicationmenu)
+
+Service Portal: [SPWidget](#spwidget) · [SPPage](#sppage) · [SPContainer](#spcontainer) · [SPRow](#sprow) · [SPColumn](#spcolumn) · [SPInstance](#spinstance) · [SPTheme](#sptheme) · [SPMenuItem](#spmenuitem) · [SPMenu](#spmenu) · [ServicePortal](#serviceportal)
+
+Process & data: [Flow](#flow) · [ImportSet](#importset) · [SLA](#sla) · [Workspace](#workspace) · [ATF Test](#atf-test-automatedtestframework)
+
 ---
 
 ## Table

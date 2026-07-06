@@ -76,7 +76,7 @@ if (current.priority < 1 || current.priority > 4) {
 
 **Critical:** `current.setAbortAction(true)` only works in `before` rules. Calling it in an `after` rule has no effect.
 
-**Critical:** Do NOT call `current.update()` inside a Business Rule. The platform calls `update()` for you — calling it explicitly causes an infinite loop.
+**Critical:** Do NOT call `current.update()` inside a Business Rule. In a **before** rule the platform writes `current` for you — just set the fields. In an **after/async** rule the record is already saved: changes to `current` are silently lost, and "fixing" that with `current.update()` re-runs the rule stack (recursion). Move record-modifying logic to a before rule; use after/async rules to act on *other* records via their own GlideRecord. See gotchas.md #3 for the full pattern.
 
 ---
 
@@ -99,8 +99,30 @@ if (current.priority < 1 || current.priority > 4) {
 |---|---|---|
 | `gs.getUserID()` | `string` | sys_id of the currently logged-in user |
 | `gs.getUserName()` | `string` | Login name (username) of the currently logged-in user |
+| `gs.hasRole('role_name')` | `boolean` | Whether the current user has the role (admin always returns true) |
 
 ```javascript
 // Example: log the current user's login name
 gs.info('Script running as user: ' + gs.getUserName());
 ```
+
+### Other everyday gs methods
+
+| Method | Description |
+|---|---|
+| `gs.getProperty('name', 'default')` | Read a system property — the right home for configurable values (never hard-code sys_ids/URLs) |
+| `gs.addInfoMessage(msg)` / `gs.addErrorMessage(msg)` | Show a message banner to the user on the next form load (UI sessions only — invisible in background jobs) |
+| `gs.eventQueue('event.name', current, parm1, parm2)` | Fire a registered event (drives notifications and script actions) — the event must exist in the Event Registry |
+| `gs.nil(value)` | True if null, undefined, or empty string — safer than truthiness checks on GlideElements |
+
+### Dates: GlideDateTime
+
+```javascript
+var gdt = new GlideDateTime();          // now
+gdt.addDaysUTC(-30);                    // 30 days ago
+gr.addQuery('sys_created_on', '<', gdt); // usable directly in queries
+```
+
+For relative-date filters, building the query in the UI and copying the encoded query is the most reliable route (see gliderecord.md).
+
+This gs list is a curated subset (Hard Rule 5 applies): never invent `gs.*` method names; if you need something not listed, confirm it in the official GlideSystem docs and say so.

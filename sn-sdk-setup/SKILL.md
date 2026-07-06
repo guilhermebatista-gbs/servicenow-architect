@@ -1,7 +1,7 @@
 ---
 name: sn-sdk-setup
 description: Use when setting up, configuring, building, or deploying with the ServiceNow SDK — scaffolding new projects, configuring Basic or OAuth authentication, converting existing applications, building and deploying to an instance, or validating a development environment. Covers all init templates, auth setup with named aliases, the build→deploy→verify lifecycle, and the check-environment script.
-license: Apache-2.0
+license: MIT
 compatibility: Designed for Claude Code, Cursor, VS Code Copilot, Antigravity, Codex, and similar AI coding tools.
 ---
 
@@ -35,7 +35,7 @@ Read only the file relevant to your task. Do not pre-load references at session 
 2. **Use `now-sdk auth --add`, not `auth save` or `login`.** `auth save` does not exist. `login` is deprecated. The correct command is `now-sdk auth --add <url> --alias <name>`.
 3. **Always use a named alias.** Use `now-sdk auth --add <url> --alias dev` — aliases allow multiple instances.
 4. **Never pick a template without understanding the use case.** Follow the discovery flow in the scaffold behavior below. Default to `typescript.basic` only as a last resort after two unanswered prompts.
-5. **The scope prefix comes from now.config.json.** When helping with Fluent DSL code after setup, tell the user to activate the sn-sdk-fluent skill.
+5. **The scope prefix comes from now.config.json.** For writing Fluent DSL code after setup, read the main file in `../sn-sdk-fluent/` — that sub-skill owns code generation.
 6. **Never run install without a successful build first.** `now-sdk install` deploys whatever is in `dist/`. Running it without a prior `now-sdk build` silently pushes stale or missing artifacts. Build must complete cleanly before deploy.
 7. **Always verify auth before deploying.** OAuth tokens expire silently. Run `now-sdk auth --list` and confirm the correct alias is active before every deploy. A mid-deploy auth failure is confusing and hard to diagnose.
 8. **`sys_app.do` is the app record, not the running UI.** After deploy, the link in the install output points to the app record. The live UI URL is the `endpoint` value defined in the `UiPage()` call in the `.now.ts` source — e.g. `https://<instance>.service-now.com/<endpoint>.do`.
@@ -78,7 +78,7 @@ now-sdk init \
 Then: `npm install`
 
 **Step 5 — Hand off**
-> "Project ready. Activate the **sn-sdk-fluent** skill to start writing .now.ts files."
+> "Project ready — next step is writing `.now.ts` files." Then continue with the **sn-sdk-fluent** sub-skill (read the main file in `../sn-sdk-fluent/`).
 
 ---
 
@@ -129,7 +129,7 @@ now-sdk install --auth <alias>   # override the default alias
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | Auth error mid-deploy | Expired OAuth token | OAuth token refresh requires interactive input — see `references/cli-reference.md` → **auth --add (token refresh)** for the Terminal workaround, then retry deploy. |
-| "Could not determine app installation status" | Upload processor returns no tracker ID; SDK's `sys_upgrade_history` poll times out after 30s | Use `--reinstall`: `now-sdk install --auth <alias> --reinstall`. This uninstalls first, then reinstalls cleanly via the tracker path. |
+| "Could not determine app installation status" | Upload processor returns no tracker ID; SDK's `sys_upgrade_history` poll times out after 30s | `--reinstall` can clear it — but it is **DESTRUCTIVE**: it removes instance metadata not present in the local package, irreversibly. First run `now-sdk transform` to pull current instance state into source, confirm nothing only-on-instance will be lost, then `now-sdk install --auth <alias> --reinstall` (see `../sn-sdk-fluent/references/gotchas.md` #3). |
 | Install succeeds but UI shows old code | Build was skipped or stale | Re-run `npm run build` then `npm run deploy` |
 | Type-check error blocks build | TypeScript error in source | Fix the error reported — do not bypass |
 | Scope conflict on install | Another app owns the scope | Check `sys_app` for conflicting scope, resolve before retrying |

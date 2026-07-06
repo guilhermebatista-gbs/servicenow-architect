@@ -5,7 +5,7 @@ For an Application Service to be worth mapping, it needs the items below. Withou
 ## Checklist per Application Service
 
 ### Identification
-- [ ] Name (e.g. "Payments PROD", "Retiree Portal UAT")
+- [ ] Name (e.g. "Payments PROD", "HR Portal UAT")
 - [ ] Parent Business Application (1:N)
 - [ ] Environment (PROD / UAT / DEV / STG / TEST)
 - [ ] Hosting type (On-Prem / Cloud-AWS / Cloud-Azure / Cloud-GCP / SaaS)
@@ -66,6 +66,6 @@ Top unblocker: <the highest-impact action to move it forward>
 ## Rules of thumb
 
 1. **No reliable entry point → don't invoke Service Mapping yet.** Prioritize collecting the URL/LB first.
-2. **SaaS has an external entry point.** Model it anyway — Service Mapping can monitor external availability even without internal infrastructure.
+2. **SaaS still gets a service record.** Record the external entry point, SSO, and integrations on the service — but don't point Service Mapping discovery at a vendor URL you don't control (no credentials, no infrastructure to walk). Availability checks on external endpoints belong to monitoring tooling, not to Service Mapping.
 3. **If the owner doesn't know the load balancer, escalate to the network/infrastructure team.** Service Mapping needs the correct path on the LB, not just the external DNS name.
 4. **Authentication affects discovery.** If SSO enforces MFA, mapping can't authenticate — record it as a limitation and consider a HEAD-only endpoint check instead.

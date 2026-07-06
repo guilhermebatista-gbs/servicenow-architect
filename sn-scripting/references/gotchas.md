@@ -58,25 +58,32 @@ current.setAbortAction(true);
 
 ---
 
-## Gotcha 3: `current.update()` inside a Business Rule causes infinite loop
+## Gotcha 3: `current.update()` inside a Business Rule
 
-Calling `current.update()` inside a Business Rule re-triggers that same Business Rule, creating infinite recursion.
+Calling `current.update()` on `current` inside a Business Rule is almost always wrong — and the right fix depends on the rule's **timing**. AI frequently gets both halves wrong.
 
 **Wrong:**
 ```javascript
-// WRONG — inside an "after" Business Rule; this triggers the rule again
+// WRONG — in a *before* Business Rule
 current.state = 2;
-current.update();  // infinite loop
+current.update();  // double write + re-triggers the rule stack (recursion; the platform may abort it)
 ```
 
-**Correct:**
+**Correct (before rule):**
 ```javascript
-// CORRECT — Business Rules do not need current.update(); the platform saves current automatically
+// CORRECT — in a *before* rule, just set the fields; the platform writes current as part of the operation
 current.state = 2;
-// No update() call needed — the platform commits current after the rule completes
+// no update() — the change is saved with the record
 ```
 
-**Rule:** Never call `current.update()` inside a Business Rule. The platform automatically saves `current` after rule execution completes. Use `current.update()` only in Script Includes or background scripts operating on records other than `current`. If you must update inside a rule, add a condition guard (e.g., check a flag on `current` to prevent re-triggering).
+**The after-rule trap:** in an *after* (or *async*) rule the record is **already saved**. Setting `current.state = 2` there persists nothing — the change is silently lost. Don't "fix" that with `current.update()` either; it re-runs the whole rule stack on the same record.
+
+**Correct placement by intent:**
+- Modifying the record being saved → **before** rule, set fields, no `update()`.
+- Reacting after the save (notify, update *other* records) → **after/async** rule with a separate `GlideRecord` for those other records (`update()` on them is fine).
+- Truly must write `current` again after save (rare) → guard against recursion (condition on the field you set), and know that `setWorkflow(false)` skips **all** business rules and engines on that write — use it deliberately, not as a default.
+
+**Rule:** Never call `current.update()` on `current` inside a Business Rule. Choose the timing that makes the write natural instead.
 
 ---
 
@@ -112,10 +119,9 @@ AI frequently generates plausible-sounding method names that do not exist in the
 
 **Wrong — methods that do not exist:**
 ```javascript
-gr.getField('field_name');    // does not exist
-gr.setQuery('active=true');   // does not exist
+gr.getField('field_name');    // does not exist — use getValue() or getElement()
+gr.setQuery('active=true');   // does not exist — use addEncodedQuery()
 gr.addOrder('name');          // does not exist — use orderBy()
-gr.getTableName();            // does not exist — use getRecordClassName()
 ```
 
 **Correct — documented methods:**
@@ -126,7 +132,10 @@ gr.addQuery('field', 'op', val);   // add a query condition
 gr.addEncodedQuery('state=1');     // add a pre-built encoded query
 gr.orderBy('name');                // sort ascending
 gr.orderByDesc('sys_created_on'); // sort descending
-gr.getRecordClassName();           // returns the table name (e.g. 'incident')
+gr.getTableName();                 // table of this GlideRecord object (e.g. 'task')
+gr.getRecordClassName();           // actual class of the current record (e.g. 'incident' on an extended table)
 ```
 
-**Rule (SKILL.md Hard Rule 5):** Only use GlideRecord methods documented in gliderecord.md. If a method name is not listed there, do not use it — ask for the correct method instead of guessing.
+Note the last two: **both exist** and differ — `getTableName()` returns the table the GlideRecord was built on; `getRecordClassName()` returns the concrete class of the row (they diverge on extended tables like `task`).
+
+**Rule (Hard Rule 5):** Never invent method names. gliderecord.md is a curated subset — if a method isn't listed there, confirm it in the official ServiceNow API docs before using it, and say you did.

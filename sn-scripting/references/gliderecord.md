@@ -183,3 +183,56 @@ while (gr.next()) {
     gs.info(gr.getValue('number'));  // Only returns records the current user can read
 }
 ```
+
+---
+
+## Common methods beyond CRUD
+
+This reference is a curated subset, not the full platform API (see Hard Rule 5). These are the everyday methods that come up constantly and are safe to use:
+
+| Method | Purpose | Note |
+|---|---|---|
+| `setLimit(n)` | Cap the number of rows returned | Call before `query()` |
+| `orderBy(field)` / `orderByDesc(field)` | Sort results | Call before `query()` |
+| `addNullQuery(field)` / `addNotNullQuery(field)` | Match empty / non-empty fields | |
+| `addActiveQuery()` | Shortcut for `addQuery('active', true)` | |
+| `getDisplayValue(field)` | Display value (reference name, translated choice label) instead of the raw sys_id/value | `getValue()` gives the raw value |
+| `getUniqueValue()` | The record's sys_id as a string | Equivalent to `getValue('sys_id')` |
+| `getRowCount()` | Row count of an executed query | For counting alone, prefer `GlideAggregate` — far cheaper |
+| `hasNext()` | Peek whether another row exists | |
+| `setWorkflow(false)` | Skip business rules/engines on the next write | Skips **everything** (rules, notifications, SLAs). Deliberate use only — never a default |
+| `autoSysFields(false)` | Don't touch sys_updated_* on the next write | Data-fix scripts only |
+| `updateMultiple()` / `deleteMultiple()` | Bulk write/delete for the whole query result | With `updateMultiple()`, set values via `setValue()` and never combine with dot-walked or journal fields |
+
+### Counting: use GlideAggregate
+
+```javascript
+var ga = new GlideAggregate('incident');
+ga.addQuery('active', true);
+ga.addAggregate('COUNT');
+ga.query();
+var count = ga.next() ? parseInt(ga.getAggregate('COUNT'), 10) : 0;
+```
+
+`GlideAggregate` mirrors the GlideRecord query API (`addQuery`, `addEncodedQuery`, `groupBy`) and supports COUNT, SUM, AVG, MIN, MAX — use it whenever you need numbers rather than records.
+
+### Dot-walking reference fields
+
+`getValue()` does **not** dot-walk. To read through a reference, chain the fields and convert explicitly:
+
+```javascript
+var company = gr.caller_id.company.getDisplayValue(); // display value through the reference
+var companyId = gr.caller_id.company.toString();       // sys_id through the reference
+```
+
+Each dot-walk costs a lookup — inside large loops, prefer querying the related table once or using `GlideAggregate`.
+
+### Relative-date queries
+
+Build the filter in the UI (list filter → copy query) and paste it as an encoded query, rather than hand-writing date arithmetic:
+
+```javascript
+gr.addEncodedQuery('sys_created_on<javascript:gs.beginningOfLast30Days()');
+```
+
+For date math in code, use `GlideDateTime` (see server-side.md).

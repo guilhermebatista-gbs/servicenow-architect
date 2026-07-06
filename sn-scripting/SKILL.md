@@ -2,11 +2,12 @@
 name: sn-scripting
 description: >
   Generates GlideRecord queries, Script Include classes, and client scripts
-  for ServiceNow legacy scripting. Use for Business Rules, Scheduled Jobs,
-  server-side Script Includes, and client-side g_form/g_user scripts.
-  Redirects to sn-sdk-fluent when Fluent SDK is detected in the workspace.
+  for ServiceNow scripting. Use for Business Rules, Scheduled Jobs,
+  server-side Script Includes, and client-side g_form/g_user scripts —
+  including the script bodies inside Fluent SDK metadata definitions.
+  Metadata definition itself belongs to sn-sdk-fluent.
 compatibility: Designed for Claude Code, Cursor, VS Code Copilot, Antigravity, Codex, and similar AI coding tools.
-license: Apache-2.0
+license: MIT
 ---
 
 # ServiceNow Legacy Scripting
@@ -15,7 +16,7 @@ ServiceNow legacy scripting uses the GlideRecord API for server-side data access
 
 ## References
 
-Read these files when you need them — do not pre-load all references at session start. Paths are relative to the skill root (the directory containing this `SKILL.md` file).
+Read these files when you need them — do not pre-load all references at session start. Paths are relative to the skill root (the directory containing this file).
 
 | File | When to Read |
 |------|-------------|
@@ -42,12 +43,15 @@ Use these as structural templates — only read the example that matches your ta
 
 ## Hard Rules
 
-1. **Never use GlideRecord when ServiceNow Fluent SDK is present.**
+1. **In a Fluent SDK project, know which layer you're on.**
    If the workspace contains `now.config.json`, `.now.ts` files, or imports from `@servicenow/sdk/core`,
-   the developer is working in a Fluent SDK application. Stop and redirect:
-   "I can see you're working in a Fluent SDK project. Use the sn-sdk-fluent skill to generate
-   typed metadata definitions instead of GlideRecord scripts. GlideRecord is the legacy scripting
-   API and does not work inside Fluent SDK `.now.ts` files."
+   the developer is working in a Fluent SDK application. Two different layers apply:
+   - **Metadata definition** (creating tables, ACLs, Business Rules, Script Includes as objects) →
+     that is Fluent's job. Redirect to `../sn-sdk-fluent/` (read its main file) instead of writing
+     GlideRecord "setup scripts" or standalone legacy artifacts.
+   - **Script bodies** (the logic inside a `script` property, a `Now.include()` file, or `src/server/`
+     modules) → that is exactly this sub-skill. Those bodies are standard Glide server-side JS —
+     apply this file's rules and references to them.
 
 2. **GlideRecord is server-side only** — never generate GlideRecord in a Client Script. Use GlideAjax.
 
@@ -55,13 +59,13 @@ Use these as structural templates — only read the example that matches your ta
 
 4. **Use getValue() in loops** — gr.field_name returns a pointer; gr.getValue('field_name') returns the string value.
 
-5. **Only use documented API methods** — do not invent methods like gr.getField(), gr.setQuery(), or gr.addOrder().
+5. **Never invent method names** — no gr.getField(), gr.setQuery(), gr.addOrder(). Prefer the methods documented in `references/gliderecord.md`; it is a curated subset, not the whole platform API. If a real, commonly used method isn't listed (check the official ServiceNow API docs), you may use it — say explicitly that it's outside the local reference and worth verifying. What is never acceptable is guessing a plausible-sounding name.
 
 ## Behavior by Task Type
 
 ### Generating
 
-1. Check for Fluent SDK signals first (Hard Rule 1) — if detected, redirect immediately; do not generate GlideRecord code.
+1. Check for Fluent SDK signals first (Hard Rule 1) — if detected, decide the layer: metadata definition goes to `../sn-sdk-fluent/`; script bodies stay here.
 2. Identify the script context: server-side (Business Rule, Script Include) or client-side (Client Script).
 3. For server-side: read `references/gliderecord.md` for CRUD patterns, `references/server-side.md` for Script Include structure and Business Rule context variables.
 4. For client-side: read `references/client-side.md` for g_form/g_user/g_list APIs. Never generate GlideRecord in a client script (Hard Rule 2).
@@ -77,4 +81,4 @@ Use these as structural templates — only read the example that matches your ta
 ### Explaining
 
 1. Route the developer to the relevant reference file for detailed method documentation.
-2. For Fluent SDK questions, redirect to the sn-sdk-fluent skill.
+2. For Fluent SDK metadata questions, read the main file in `../sn-sdk-fluent/`.

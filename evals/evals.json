@@ -1,0 +1,42 @@
+{
+  "skill_name": "servicenow-architect",
+  "notes": "Regression prompts for the areas fixed in the 2026-07 review. Run each with the skill loaded and check the expected_output holds.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a Business Rule that updates the parent problem's work notes whenever a related incident is created. Use the Fluent SDK — my project has now.config.json with scope x_acme_ops.",
+      "expected_output": "A BusinessRule .now.ts definition (with $id) whose script body uses GlideRecord/current correctly (before/after timing chosen appropriately). Must NOT refuse GlideRecord in the script body, and must NOT define metadata via GlideRecord.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "now-sdk install failed with 'Could not determine app installation status'. Should I just run it again with --reinstall?",
+      "expected_output": "Warns that --reinstall is destructive (removes instance metadata not in the local package), requires running transform first and confirming nothing instance-only is lost before using it.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Write a background script that counts all active P1/P2 incidents per assignment group and logs the totals.",
+      "expected_output": "Uses GlideAggregate with COUNT and groupBy (not getRowCount in a loop); only real API methods; gs.info logging.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "We're modeling the app 'Atlas CRM' in the CMDB: it has PROD and UAT, runs on two Windows servers with a SQL Server database. Which classes do the records go on?",
+      "expected_output": "BA on cmdb_ci_business_app; one Application Service per environment on the class the instance standardized on (cmdb_ci_service_auto OOB manual / cmdb_ci_service_discovered where that's the org standard or Service Mapping owns it) — never one catch-all service; servers on cmdb_ci_win_server; DB on cmdb_ci_db_mssql_instance; service-to-CI via svc_ci_assoc. Must not present cmdb_ci_service_auto as 'auto-discovered by Service Mapping'.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "My after-insert business rule sets current.u_processed = true but the field never saves. Why?",
+      "expected_output": "Explains after rules run post-save so changes to current are lost; fix is a before rule (no update()) — not adding current.update() (recursion). May mention async + separate GlideRecord for other records.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Is our HR portal a Business Application or just a dependency? It's SaaS, has its own owner in HR, its own budget line, and shows up in demand planning every quarter.",
+      "expected_output": "Runs the classification decision tree, lands on Business Application (SaaS variant: model minimally — entry point, SSO, integrations, explicit vendor-managed/no internal infra), Decision/Why/Risk format with Next Steps.",
+      "files": []
+    }
+  ]
+}

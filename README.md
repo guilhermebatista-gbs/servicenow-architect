@@ -12,8 +12,8 @@ A multi-skill suite that gives any compatible AI coding/agent tool senior-Servic
 | **[sn-governance](./sn-governance/)** | Platform & instance governance (five pillars), governance boards, update sets & CI/CD, environment management, upgrades, development standards, customization-vs-configuration, citizen-dev guardrails. |
 | **[sn-delivery](./sn-delivery/)** | Requirements & user-story standards (INVEST, Given/When/Then), estimation, backlog, scope checkpoint & scope control, enhancements vs defects, phase gates, delivery quality reviews. |
 | **[sn-sdk-fluent](./sn-sdk-fluent/)** | Fluent SDK metadata (`.now.ts`): Tables, Columns, ACLs, Flow triggers, UI Actions, Business Rules, Service Portal widgets. |
-| **[sn-scripting](./sn-scripting/)** | Legacy scripting: GlideRecord (CRUD & querying), Script Includes, Client Scripts, UI Policies, `g_form`, and the server/client execution boundary. |
-| **[sn-sdk-setup](./sn-sdk-setup/)** | `now-sdk` CLI & scaffolding, OAuth/Basic auth profiles, project architecture, environment configuration. |
+| **[sn-scripting](./sn-scripting/)** | Glide scripting: GlideRecord (CRUD & querying), Script Includes, Client Scripts, UI Policies, `g_form`, the server/client execution boundary — including the script bodies inside Fluent metadata. |
+| **[sn-sdk-setup](./sn-sdk-setup/)** | `now-sdk` CLI & scaffolding, OAuth/Basic auth profiles, project architecture, environment configuration, and the build→deploy→verify lifecycle. |
 
 ## How it works
 
